@@ -7,21 +7,21 @@ const authMiddleware = require('../../middlewares/AuthMiddleware');
 /**
  * @swagger
  * tags:
- *   name: Users
+ *   name: JobSeeker
  *   description: User management and retrieval
  */
 
 /**
  * @swagger
- * /api/users/all-user:
+ * /api/jobseeker/profile/{id}:
  *   get:
- *     summary: Retrieve a list of all users
- *     tags: [Users]
+ *     summary: Retrieve a list of all JobSeeker
+ *     tags: [JobSeeker]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: A list of users
+ *         description: A list of JobSeeker
  *         content:
  *           application/json:
  *             schema:

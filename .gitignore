@@ -65,3 +65,6 @@ pids/
 
 # Parcel build output
 .cache/
+
+Dockerfile
+.dockerignore

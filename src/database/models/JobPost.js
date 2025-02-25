@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const jobPostSchema = new mongoose.Schema({
   company_id: { type: mongoose.Schema.Types.ObjectId, ref: "Company", required: true },
+  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
   location: { type: String, required: true },

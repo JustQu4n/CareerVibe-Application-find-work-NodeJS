@@ -1,5 +1,5 @@
 const express = require("express");
-const connectDB = require("./database/connection");
+const connectDB = require("./config/db");
 const swaggerSetup  = require("./config/swagger");
 const cors = require('cors');
 const app = express();
