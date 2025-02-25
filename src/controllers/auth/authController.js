@@ -1,9 +1,9 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../database/models/User");
-const JobSeeker = require("../database/models/JobSeeker");
-const Employer = require("../database/models/Employer");
-const Company = require("../database/models/Companies");
+const User = require("../../database/models/User");
+const JobSeeker = require("../../database/models/JobSeeker");
+const Employer = require("../../database/models/Employer");
+const Company = require("../../database/models/Companies");
 
 // Đăng ký JobSeeker
 const registerJobSeeker = async (req, res) => {

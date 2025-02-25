@@ -1,4 +1,4 @@
-const JobSeeker = require('../database/models/JobSeeker'); // Adjust the path as necessary
+const JobSeeker = require('../../database/models/JobSeeker'); // Adjust the path as necessary
 
 const getJobSeekerById = async (req, res) => {
     try {

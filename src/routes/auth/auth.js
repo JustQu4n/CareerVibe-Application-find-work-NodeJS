@@ -1,6 +1,3 @@
-const express = require('express');
-const router = express.Router();
-const authController = require('../../controllers/AuthController');
 
 /**
  * @swagger
@@ -86,7 +83,6 @@ const authController = require('../../controllers/AuthController');
  *       500:
  *         description: Server error
  */
-router.post("/register-jobseeker", authController.registerJobSeeker);
 
 /**
  * @swagger
@@ -151,7 +147,6 @@ router.post("/register-jobseeker", authController.registerJobSeeker);
  *       500:
  *         description: Server error
  */
-router.post("/login-jobseeker", authController.loginJobSeeker);
 
 /**
  * @swagger
@@ -226,7 +221,7 @@ router.post("/login-jobseeker", authController.loginJobSeeker);
  *       500:
  *         description: Server error
  */
-router.post("/register-employer", authController.registerEmployer);
+
 
 /**
  * @swagger
@@ -289,6 +284,14 @@ router.post("/register-employer", authController.registerEmployer);
  *       500:
  *         description: Server error
  */
+
+const express = require('express');
+const router = express.Router();
+const authController = require('../../controllers/auth/authController');
+
+router.post("/register-jobseeker", authController.registerJobSeeker);
+router.post("/login-jobseeker", authController.loginJobSeeker);
+router.post("/register-employer", authController.registerEmployer);
 router.post("/login-employer", authController.loginEmployer);
 
 module.exports = router;

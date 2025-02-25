@@ -1,8 +1,3 @@
-const express = require('express');
-const router = express.Router();
-const UserController = require('../../controllers/JobSeekerController');
-const authMiddleware = require('../../middlewares/AuthMiddleware');
-
 
 /**
  * @swagger
@@ -32,6 +27,11 @@ const authMiddleware = require('../../middlewares/AuthMiddleware');
  *         description: Internal server error
  */
 
-router.get('/:id', UserController.getJobSeekerById);
+const express = require('express');
+const router = express.Router();
+const jobSeeker= require('../../controllers/jobseeker/JobSeekerController');
+const authMiddleware = require('../../middlewares/AuthMiddleware');
+
+router.get('/:id',authMiddleware, jobSeeker.getJobSeekerById);
 
 module.exports = router;
