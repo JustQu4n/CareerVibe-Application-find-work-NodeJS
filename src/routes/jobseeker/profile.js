@@ -1,39 +1,107 @@
+const express = require('express');
+const router = express.Router();
+const jobSeekerController = require('../../controllers/jobseeker/jobSeekerController');
+const authMiddleware = require('../../middlewares/authMiddleware');
 
 /**
  * @swagger
  * tags:
- *   name: JobSeeker
- *   description: User management and retrieval
+ *   name: JobSeekers
+ *   description: API endpoints for managing job seeker profiles
  */
 
 /**
  * @swagger
  * /api/jobseeker/profile/{id}:
  *   get:
- *     summary: Retrieve a list of all JobSeeker
- *     tags: [JobSeeker]
+ *     summary: Get job seeker profile by ID
+ *     tags: [JobSeekers]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Job Seeker ID
  *     responses:
  *       200:
- *         description: A list of JobSeeker
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *       401:
- *         description: Unauthorized
+ *         description: Job seeker profile retrieved successfully
+ *       404:
+ *         description: Job seeker not found
  *       500:
  *         description: Internal server error
  */
+router.get('/:id', authMiddleware, jobSeekerController.getJobSeekerById);
 
-const express = require('express');
-const router = express.Router();
-const jobSeekerController= require('../../controllers/jobseeker/jobSeekerController');
-const authMiddleware = require('../../middlewares/AuthMiddleware');
-
-router.get('/:id',authMiddleware, jobSeekerController.getJobSeekerById);
+/**
+ * @swagger
+ * /api/jobseeker/profile/{id}:
+ *   put:
+ *     summary: Update job seeker profile by ID
+ *     tags: [JobSeekers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Job Seeker ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               experience:
+ *                 type: string
+ *               skills:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Job seeker profile updated successfully
+ *       404:
+ *         description: Job seeker not found
+ *       500:
+ *         description: Internal server error
+ */
 router.put('/:id', authMiddleware, jobSeekerController.updateJobSeekerProfile);
+
+/**
+ * @swagger
+ * /api/jobseeker/profile/{id}:
+ *   delete:
+ *     summary: Delete job seeker profile by ID
+ *     tags: [JobSeekers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Job Seeker ID
+ *     responses:
+ *       200:
+ *         description: Job seeker profile deleted successfully
+ *       404:
+ *         description: Job seeker not found
+ *       500:
+ *         description: Internal server error
+ */
 router.delete('/:id', authMiddleware, jobSeekerController.deleteJobSeekerProfile);
 
 module.exports = router;

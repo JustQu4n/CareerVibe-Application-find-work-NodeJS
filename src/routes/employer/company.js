@@ -1,7 +1,7 @@
 /**
  * @swagger
  * tags:
- *   name: Employer
+ *   name: Company
  *   description: Employer related endpoints
  */
 
@@ -10,7 +10,7 @@
  * /employer/companies/{company_id}/job-posts:
  *   get:
  *     summary: Retrieve all job posts of a company
- *     tags: [Employer]
+ *     tags: [Company]
  *     parameters:
  *       - in: path
  *         name: company_id
@@ -36,7 +36,7 @@
  * /employer/companies/{company_id}:
  *   put:
  *     summary: Update a company's information
- *     tags: [Employer]
+ *     tags: [Company]
  *     parameters:
  *       - in: path
  *         name: company_id
