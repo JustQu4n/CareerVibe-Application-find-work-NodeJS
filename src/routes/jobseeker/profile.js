@@ -29,9 +29,11 @@
 
 const express = require('express');
 const router = express.Router();
-const jobSeeker= require('../../controllers/jobseeker/jobSeekerController');
+const jobSeekerController= require('../../controllers/jobseeker/jobSeekerController');
 const authMiddleware = require('../../middlewares/AuthMiddleware');
 
-router.get('/:id',authMiddleware, jobSeeker.getJobSeekerById);
+router.get('/:id',authMiddleware, jobSeekerController.getJobSeekerById);
+router.put('/:id', authMiddleware, jobSeekerController.updateJobSeekerProfile);
+router.delete('/:id', authMiddleware, jobSeekerController.deleteJobSeekerProfile);
 
 module.exports = router;

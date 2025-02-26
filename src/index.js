@@ -16,10 +16,6 @@ app.use(cors());
 swaggerSetup (app);
 
 // Routes
-// const authRoutes = require('./routes/AuthRoutes');
-// app.use('/api/auth', authRoutes);
-// const jobSeeker = require('./routes/JobSeeker/JobSeekerRoutes');
-// app.use('/api/users', jobSeeker);
 app.use('/api', require('./routes'));
 
 

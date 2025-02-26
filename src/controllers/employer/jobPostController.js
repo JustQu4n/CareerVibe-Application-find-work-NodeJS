@@ -121,6 +121,67 @@ const deleteJobPost = async (req, res) => {
   }
 };
 
+const searchJobs = async (req, res) => {
+    try {
+        
+        const { title, location } = req.query;
+        let query = {};
+        if (title) {
+            query.title = { $regex: title, $options: "i" }; // Tìm kiếm không phân biệt hoa thường
+          }
+        if (location) {
+            query.location = { $regex: location, $options: "i" };
+        }
+
+        const jobs = await JobPost.find(query).sort({ created_at: -1 });
+        res.status(200).json({ success: true, data: jobs });
+    } catch (error) {
+        console.error("Error searching job posts:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+const filterJobs = async (req, res) => {
+    try {
+        console.log(req.query);
+        const { title, location, job_type, experience, level, min_salary, max_salary } = req.query; //add more if needed
+        let query = {};
+
+        if (title) {
+            query.title = { $regex: title, $options: "i" };
+        }
+
+        if (location) {
+            query.location = { $regex: location.replace(/\s+/g, "\\s*"), $options: "i" };
+        }
+
+        if (experience) {
+            query.experience = { $regex: experience.replace(/\s+/g, "\\s*"), $options: "i" };
+        }
+
+        if (level) {
+            query.level = { $regex: level.replace(/\s+/g, "\\s*"), $options: "i" };
+        }
+
+        if (job_type) {
+            query.job_type = job_type;
+        }
+
+        if (min_salary || max_salary) {
+            query.salary = {};
+            if (min_salary) query.salary.$gte = parseInt(min_salary); 
+            if (max_salary) query.salary.$lte = parseInt(max_salary); 
+        }
+
+        const jobs = await JobPost.find(query).sort({ created_at: -1 });
+        res.status(200).json({ success: true, data: jobs });
+
+    } catch (error) {
+        console.error("Error filtering job posts:", error);
+        res.status(500).json({ message: "Internal server error" });
+        
+    }
+}
+
 module.exports = {
-    createJobPost, getAllJobPostsByEmployerId, updateJobPost, deleteJobPost
+    createJobPost, getAllJobPostsByEmployerId, updateJobPost, deleteJobPost, searchJobs, filterJobs
   };

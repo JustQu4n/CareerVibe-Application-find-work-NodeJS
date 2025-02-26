@@ -171,6 +171,9 @@ const registerEmployer = async (req, res) => {
           email: user.email,
           role: user.role,
         },
+        employer: {
+          id: employer._id,
+        },
         company: {
           id: company._id,
           name: company.name,
@@ -220,6 +223,9 @@ const loginEmployer = async (req, res) => {
           id: user._id,
           email: user.email,
           role: user.role,
+        },
+        employer: {
+          id: employer._id,
         },
         company: {
           id: employer.company_id._id,
