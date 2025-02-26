@@ -29,7 +29,7 @@
 
 const express = require('express');
 const router = express.Router();
-const jobSeeker= require('../../controllers/jobseeker/JobSeekerController');
+const jobSeeker= require('../../controllers/jobseeker/jobSeekerController');
 const authMiddleware = require('../../middlewares/AuthMiddleware');
 
 router.get('/:id',authMiddleware, jobSeeker.getJobSeekerById);
