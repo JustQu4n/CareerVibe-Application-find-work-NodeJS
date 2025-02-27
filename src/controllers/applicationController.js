@@ -11,7 +11,8 @@ const createApplication = async (req, res) => {
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: "CV file is required" });
-          }
+        }
+        
         // Check if job post exists
         const jobPostExists = await JobPost.findById(job_post_id);
         if (!jobPostExists) {

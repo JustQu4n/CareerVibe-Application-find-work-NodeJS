@@ -1,4 +1,6 @@
 const JobSeeker = require('../../database/models/JobSeeker'); 
+const Application = require('../../database/models/Application');
+const JobPost = require('../../database/models/JobPost');
 
 const getJobSeekerById = async (req, res) => {
     try {
@@ -45,5 +47,20 @@ const deleteJobSeekerProfile = async (req, res) => {
     }
 };
 
+const getAllJobApplications = async (req, res) => {
+    try {
+        const jobSeekerId = req.params.id;
 
-module.exports = { getJobSeekerById, updateJobSeekerProfile, deleteJobSeekerProfile };
+        const applications = await Application.find({ job_seeker_id: jobSeekerId }).populate('job_post_id');
+        if (!applications) {
+            return res.status(404).json({ message: "No applications found for this job seeker" });
+        }
+        res.status(200).json(applications);
+    } catch (error) {
+        console.error("Error fetching job applications:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
+module.exports = { getJobSeekerById, updateJobSeekerProfile, deleteJobSeekerProfile, getAllJobApplications };

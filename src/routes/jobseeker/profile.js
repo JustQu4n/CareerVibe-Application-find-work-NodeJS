@@ -103,5 +103,29 @@ router.put('/:id', authMiddleware, jobSeekerController.updateJobSeekerProfile);
  *         description: Internal server error
  */
 router.delete('/:id', authMiddleware, jobSeekerController.deleteJobSeekerProfile);
+/**
+ * @swagger
+ * /api/jobseeker/profile/{id}/applications:
+ *   get:
+ *     summary: Get all job applications for a job seeker by ID
+ *     tags: [JobSeekers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Job Seeker ID
+ *     responses:
+ *       200:
+ *         description: Job applications retrieved successfully
+ *       404:
+ *         description: No applications found for this job seeker
+ *       500:
+ *         description: Internal server error
+ */
+router.get('/:id/applications', authMiddleware, jobSeekerController.getAllJobApplications);
 
 module.exports = router;
