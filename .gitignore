@@ -68,3 +68,5 @@ pids/
 
 Dockerfile
 .dockerignore
+
+uploads/cv
