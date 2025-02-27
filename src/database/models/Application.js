@@ -5,7 +5,7 @@ const applicationSchema = new mongoose.Schema({
   job_seeker_id: { type: mongoose.Schema.Types.ObjectId, ref: "JobSeeker", required: true },
   cover_letter: { type: String },
   cv_url: { type: String, required: true },
-  status: { type: String, enum: ["pending", "reviewed", "accepted", "rejected"], default: "pending" },
+  status: { type: String, enum: ["pending", "reviewed", "accepted", "rejected", "pass"], default: "pending" },
   applied_at: { type: Date, default: Date.now },
 });
 

@@ -69,7 +69,7 @@ const getAllJobPostsByEmployerId = async (req, res) => {
 const updateJobPost = async (req, res) => {
     try {
         const jobPostId = req.params.id;
-        const { user_id, company_id, title, description, location, salary, job_type } = req.body;
+        const { user_id, company_id, title, description, location, salary, job_type, status } = req.body;
         
       // Kiểm tra xem user_id và company_id có khớp với employer không
         const employer = await Employer.find({  _id: user_id , company_id: company_id });
@@ -80,7 +80,7 @@ const updateJobPost = async (req, res) => {
         // Update job post
         const updatedJobPost = await JobPost.findByIdAndUpdate(
         jobPostId,
-        { title, description, location, salary, job_type, updated_at: Date.now() },
+        { title, description, location, salary, job_type, status, updated_at: Date.now() },
         { new: true } 
         );
 

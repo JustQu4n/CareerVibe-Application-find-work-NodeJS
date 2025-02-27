@@ -49,24 +49,4 @@ const deleteEmployerProfile = async (req, res) => {
     }
 };
 
-const getAllApplicationsByCompany = async (req, res) => {
-    try {
-        const companyId = req.params.companyId;
-
-        // Find all job posts by the company
-        const jobPosts = await JobPost.find({ company_id: companyId });
-        const jobPostIds = jobPosts.map(jobPost => jobPost._id);
-
-        // Find all applications for the job posts
-        const applications = await Application.find({ job_post_id: { $in: jobPostIds } }).populate('job_post_id').populate('job_seeker_id');
-        if (!applications.length) {
-            return res.status(404).json({ message: "No applications found for this company" });
-        }
-        res.status(200).json(applications);
-    } catch (error) {
-        console.error("Error fetching applications:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-};
-
-module.exports = { getEmployerById, updateEmployerProfile, deleteEmployerProfile, getAllApplicationsByCompany };    
+module.exports = { getEmployerById, updateEmployerProfile, deleteEmployerProfile };    
