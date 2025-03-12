@@ -120,7 +120,7 @@ const loginJobSeeker = async (req, res) => {
 
 // Đăng ký Employer
 const registerEmployer = async (req, res) => {
-  const { email, password, company_name, company_address, company_logo_url, company_description } = req.body;
+  const { email, password, full_name, phone, address, avatar_url, company_name, company_address, company_logo_url, company_description } = req.body;
 
   try {
     // Kiểm tra email đã tồn tại chưa
@@ -153,6 +153,10 @@ const registerEmployer = async (req, res) => {
     // Tạo hồ sơ Employer
     const employer = new Employer({
       user_id: user._id,
+      full_name,
+      phone,
+      address,
+      avatar_url,
       company_id: company._id,
     });
     await employer.save();
@@ -173,6 +177,10 @@ const registerEmployer = async (req, res) => {
         },
         employer: {
           id: employer._id,
+          full_name: employer.full_name,
+          phone: employer.phone,
+          address: employer.address,
+          avatar_url: employer.avatar_url,
         },
         company: {
           id: company._id,
@@ -226,6 +234,10 @@ const loginEmployer = async (req, res) => {
         },
         employer: {
           id: employer._id,
+          full_name: employer.full_name,
+          phone: employer.phone,
+          address: employer.address,
+          avatar_url: employer.avatar_url,
         },
         company: {
           id: employer.company_id._id,
