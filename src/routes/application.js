@@ -48,5 +48,6 @@ const upload = require('../config/multer');
  *         description: Internal server error
  */
 router.post('/submit', authMiddleware, upload.single('cv'), applicationController.createApplication);
-
+// Update the route - remove the parameter
+router.get('/get', authMiddleware, applicationController.getAppliedJobs);
 module.exports = router;

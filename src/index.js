@@ -9,8 +9,9 @@ connectDB();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({
-  origin: 'http://localhost:3000', // Cho phép truy cập từ frontend
+  origin: 'http://localhost:5173', // Cho phép truy cập từ frontend
   credentials: true,
 }));
 app.use(express.urlencoded({ extended: true }));

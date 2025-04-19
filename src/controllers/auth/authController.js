@@ -4,10 +4,46 @@ const User = require("../../database/models/User");
 const JobSeeker = require("../../database/models/JobSeeker");
 const Employer = require("../../database/models/Employer");
 const Company = require("../../database/models/Companies");
+const cloudinary = require('cloudinary').v2;
+const streamifier = require('streamifier');
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API,
+  api_secret: process.env.API_SECRET,
+});
+
+// Helper function for Cloudinary upload using memory storage
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "careerVibe",
+        resource_type: "image"
+      },
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    
+    // Convert buffer to stream and pipe to uploadStream
+    streamifier.createReadStream(buffer).pipe(uploadStream);
+  });
+};
 
 // Đăng ký JobSeeker
 const registerJobSeeker = async (req, res) => {
   const { email, password, full_name, phone, address, skills } = req.body;
+  console.log("Request body:", {
+    email,
+    password_exists: !!password,
+    password_type: typeof password,
+    full_name,
+    phone,
+    skills,
+    profile_image: req.file ? req.file.originalname : "No file",
+  });
 
   try {
     // Kiểm tra email đã tồn tại chưa
@@ -15,10 +51,23 @@ const registerJobSeeker = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: "Email already exists" });
     }
-
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+    
     // Mã hóa mật khẩu
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    const file = req.file;
+    if (!file) {
+      return res.status(400).json({
+        message: "Profile image is required",
+        success: false,
+      });
+    }
+    
+    const cloudResponse = await uploadToCloudinary(req.file.buffer);
 
     // Tạo người dùng mới
     const user = new User({
@@ -35,6 +84,7 @@ const registerJobSeeker = async (req, res) => {
       phone,
       address,
       skills,
+      avatar: cloudResponse.secure_url
     });
     await jobSeeker.save();
 
@@ -58,9 +108,11 @@ const registerJobSeeker = async (req, res) => {
           phone: jobSeeker.phone,
           address: jobSeeker.address,
           skills: jobSeeker.skills,
+          avatar: jobSeeker.avatar,
         },
         token,
       },
+      success: true,
     });
   } catch (error) {
     console.error(error);
@@ -108,9 +160,12 @@ const loginJobSeeker = async (req, res) => {
           phone: jobSeeker.phone,
           address: jobSeeker.address,
           skills: jobSeeker.skills,
+          avatar: jobSeeker.avatar,
+          bio: jobSeeker.bio,
         },
         token,
       },
+      success: true,
     });
   } catch (error) {
     console.error(error);
@@ -255,4 +310,27 @@ const loginEmployer = async (req, res) => {
   }
 };
 
-module.exports = { registerJobSeeker, loginJobSeeker, registerEmployer, loginEmployer };
+const logout = async (req, res) => {
+  try {
+    // Get token from header
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    if (!token) {
+      return res.status(400).json({ message: "No token provided" });
+    }
+    
+    // In a real production app, you would add this token to a blacklist
+    // (e.g., in Redis or a database table) until it expires
+    // For example: await addToBlacklist(token, jwt.decode(token).exp);
+    
+    res.status(200).json({ 
+      message: "Logged out successfully",
+      success: true 
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { registerJobSeeker, loginJobSeeker, registerEmployer, loginEmployer, logout };

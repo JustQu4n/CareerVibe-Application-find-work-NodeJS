@@ -288,10 +288,11 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../../controllers/auth/authController');
+const upload = require('../../config/multer'); // Import multer configuration
 
-router.post("/register-jobseeker", authController.registerJobSeeker);
+router.post("/register-jobseeker", upload.single('avatar'),authController.registerJobSeeker);
 router.post("/login-jobseeker", authController.loginJobSeeker);
 router.post("/register-employer", authController.registerEmployer);
 router.post("/login-employer", authController.loginEmployer);
-
+router.post('/logout', authController.logout);
 module.exports = router;

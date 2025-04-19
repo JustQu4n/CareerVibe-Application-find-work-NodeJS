@@ -39,5 +39,66 @@ const createApplication = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+const getAppliedJobs = async (req, res) => {
+    try {
+        // Get job_seeker_id from authenticated user
+        const job_seeker_id = req.id;
+        
+        if (!job_seeker_id) {
+            return res.status(401).json({
+                success: false,
+                message: "Authentication required"
+            });
+        }
+        
+        // Pagination parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        
+        // Find all applications by this job seeker
+        const applications = await Application.find({ job_seeker_id })
+            .sort({ createdAt: -1 }) // Most recent applications first
+            .skip(skip)
+            .limit(limit)
+            .populate({
+                path: 'job_post_id',
+                select: 'title company_id location salary job_type deadline status',
+                populate: {
+                    path: 'company_id',
+                    select: 'name logo_url'
+                }
+            });
+            
+        // Get total count for pagination
+        const total = await Application.countDocuments({ job_seeker_id });
+        
+        res.status(200).json({
+            success: true,
+            count: applications.length,
+            total,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            application: applications.map(app => ({
+                application_id: app._id,
+                status: app.status,
+                applied_date: app.createdAt,
+                job: app.job_post_id,
+                cv_url: app.cv_url,
+                cover_letter: app.cover_letter
+            }))
+        });
+    } catch (error) {
+        console.error("Error fetching applied jobs:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error fetching applied jobs",
+            error: error.message
+        });
+    }
+};
 
-module.exports = { createApplication };
+module.exports = { 
+    createApplication,
+    getAppliedJobs
+};

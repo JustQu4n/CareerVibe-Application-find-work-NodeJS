@@ -1,25 +1,23 @@
 const multer = require("multer");
-const path = require("path");
 
-// Cấu hình lưu file
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/cv/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  }
-});
+// Use memory storage instead of disk storage
+const storage = multer.memoryStorage();
 
-
-// Bộ lọc file (chỉ cho phép PDF, DOCX)
+// Keep the same file filter (chỉ cho phép PDF, DOCX, và hình ảnh)
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+  const allowedTypes = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/png",
+    "image/gif"
+  ];
   
   if (allowedTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only PDF and DOCX files are allowed"), false);
+    cb(new Error("Only PDF, DOCX, and image files (JPEG, PNG, GIF) are allowed"), false);
   }
 };
 

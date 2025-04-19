@@ -67,5 +67,7 @@ router.get('/search', jobPostController.searchJobs);
  *         description: Internal server error
  */
 router.get('/filter', jobPostController.filterJobs);
+router.get('/', jobPostController.getAllJobs);
+router.get('/:id', jobPostController.getJobPostById);
 
 module.exports = router;
