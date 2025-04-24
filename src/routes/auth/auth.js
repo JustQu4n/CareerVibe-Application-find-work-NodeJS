@@ -292,7 +292,7 @@ const upload = require('../../config/multer'); // Import multer configuration
 
 router.post("/register-jobseeker", upload.single('avatar'),authController.registerJobSeeker);
 router.post("/login-jobseeker", authController.loginJobSeeker);
-router.post("/register-employer", authController.registerEmployer);
+router.post("/register-employer", upload.single('logo'), authController.registerEmployer);
 router.post("/login-employer", authController.loginEmployer);
 router.post('/logout', authController.logout);
 module.exports = router;

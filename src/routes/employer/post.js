@@ -7,7 +7,7 @@
 
 /**
  * @swagger
- * /employer/post:
+ * /employer/jobposts:
  *   post:
  *     summary: Create a new job post
  *     tags: [JobPosts]
@@ -30,7 +30,7 @@
 
 /**
  * @swagger
- * /employer/post/{employer_id}:
+ * /employer/jobposts/{employer_id}:
  *   get:
  *     summary: Get all job posts by employer ID
  *     tags: [JobPosts]
@@ -54,7 +54,7 @@
 
 /**
  * @swagger
- * /employer/post/{id}:
+ * /employer/jobposts/{id}:
  *   put:
  *     summary: Update a job post by ID
  *     tags: [JobPosts]
@@ -84,7 +84,7 @@
 
 /**
  * @swagger
- * /employer/post/{id}:
+ * /employer/jobposts/{id}:
  *   delete:
  *     summary: Delete a job post by ID
  *     tags: [JobPosts]
@@ -114,5 +114,5 @@ router.post('/', authMiddleware, jobPost.createJobPost);
 router.get('/:employer_id', authMiddleware, jobPost.getAllJobPostsByEmployerId);
 router.put('/:id', authMiddleware, jobPost.updateJobPost);
 router.delete('/:id', authMiddleware, jobPost.deleteJobPost);
-
+router.get('/:id', authMiddleware, jobPost.getJobPostById);
 module.exports = router;

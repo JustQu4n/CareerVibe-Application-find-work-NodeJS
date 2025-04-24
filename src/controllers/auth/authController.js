@@ -4,8 +4,8 @@ const User = require("../../database/models/User");
 const JobSeeker = require("../../database/models/JobSeeker");
 const Employer = require("../../database/models/Employer");
 const Company = require("../../database/models/Companies");
-const cloudinary = require('cloudinary').v2;
-const streamifier = require('streamifier');
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -19,14 +19,14 @@ const uploadToCloudinary = (buffer) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "careerVibe",
-        resource_type: "image"
+        resource_type: "image",
       },
       (error, result) => {
         if (error) return reject(error);
         resolve(result);
       }
     );
-    
+
     // Convert buffer to stream and pipe to uploadStream
     streamifier.createReadStream(buffer).pipe(uploadStream);
   });
@@ -54,7 +54,7 @@ const registerJobSeeker = async (req, res) => {
     if (!password) {
       return res.status(400).json({ message: "Password is required" });
     }
-    
+
     // Mã hóa mật khẩu
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -66,7 +66,7 @@ const registerJobSeeker = async (req, res) => {
         success: false,
       });
     }
-    
+
     const cloudResponse = await uploadToCloudinary(req.file.buffer);
 
     // Tạo người dùng mới
@@ -84,14 +84,18 @@ const registerJobSeeker = async (req, res) => {
       phone,
       address,
       skills,
-      avatar: cloudResponse.secure_url
+      avatar: cloudResponse.secure_url,
     });
     await jobSeeker.save();
 
     // Tạo token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Trả về kết quả
     res.status(201).json({
@@ -138,9 +142,13 @@ const loginJobSeeker = async (req, res) => {
     }
 
     // Tạo token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Lấy thông tin JobSeeker
     const jobSeeker = await JobSeeker.findOne({ user_id: user._id });
@@ -175,8 +183,28 @@ const loginJobSeeker = async (req, res) => {
 
 // Đăng ký Employer
 const registerEmployer = async (req, res) => {
-  const { email, password, full_name, phone, address, avatar_url, company_name, company_address, company_logo_url, company_description } = req.body;
-
+  const {
+    email,
+    password,
+    full_name,
+    company_id,
+    is_existing_company,
+    company_name,
+    company_address,
+    company_domain,
+  } = req.body;
+  console.log("Request body:", {
+    email,
+    password_exists: !!password,
+    password_type: typeof password,
+    full_name,
+    company_id,
+    is_existing_company,
+    company_name,
+    company_address,
+    company_domain,
+    logo: req.file ? req.file.originalname : "No file",
+  });
   try {
     // Kiểm tra email đã tồn tại chưa
     const existingUser = await User.findOne({ email });
@@ -195,35 +223,56 @@ const registerEmployer = async (req, res) => {
       role: "employer",
     });
     await user.save();
+    let company;
 
-    // Tạo công ty mới
-    const company = new Company({
-      name: company_name,
-      address: company_address,
-      logo_url: company_logo_url,
-      description: company_description,
-    });
-    await company.save();
+    // Kiểm tra xem người dùng đã chọn công ty có sẵn chưa
+    if (is_existing_company === "true" && company_id) {
+      // Sử dụng công ty đã tồn tại
+      company = await Company.findById(company_id);
+      if (!company) {
+        return res.status(404).json({ message: "Company not found" });
+      }
+    } else {
+      // Yêu cầu logo khi tạo công ty mới
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({
+          message: "Logo image is required",
+          success: false,
+        });
+      }
 
+      const cloudResponse = await uploadToCloudinary(req.file.buffer);
+      // Tạo công ty mới
+      company = new Company({
+        name: company_name,
+        address: company_address,
+        logo: cloudResponse.secure_url,
+        email_domain: company_domain,
+      });
+      await company.save();
+    }
     // Tạo hồ sơ Employer
     const employer = new Employer({
       user_id: user._id,
       full_name,
-      phone,
-      address,
-      avatar_url,
       company_id: company._id,
     });
     await employer.save();
 
     // Tạo token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Trả về kết quả
     res.status(201).json({
       message: "Employer registered successfully",
+      success: true,
       data: {
         user: {
           id: user._id,
@@ -241,8 +290,8 @@ const registerEmployer = async (req, res) => {
           id: company._id,
           name: company.name,
           address: company.address,
-          logo_url: company.logo_url,
-          description: company.description,
+          logo: company.logo,
+          domain: company.domain,
         },
         token,
       },
@@ -271,16 +320,23 @@ const loginEmployer = async (req, res) => {
     }
 
     // Tạo token
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "1h",
+      }
+    );
 
     // Lấy thông tin Employer và Company
-    const employer = await Employer.findOne({ user_id: user._id }).populate("company_id");
+    const employer = await Employer.findOne({ user_id: user._id }).populate(
+      "company_id"
+    );
 
     // Trả về kết quả
     res.status(200).json({
       message: "Login successful",
+      success: true,
       data: {
         user: {
           id: user._id,
@@ -298,7 +354,9 @@ const loginEmployer = async (req, res) => {
           id: employer.company_id._id,
           name: employer.company_id.name,
           address: employer.company_id.address,
-          logo_url: employer.company_id.logo_url,
+          logo: employer.company_id.logo,
+          domain: employer.company_id.email_domain,
+          website: employer.company_id.website,
           description: employer.company_id.description,
         },
         token,
@@ -313,19 +371,19 @@ const loginEmployer = async (req, res) => {
 const logout = async (req, res) => {
   try {
     // Get token from header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+
     if (!token) {
       return res.status(400).json({ message: "No token provided" });
     }
-    
+
     // In a real production app, you would add this token to a blacklist
     // (e.g., in Redis or a database table) until it expires
     // For example: await addToBlacklist(token, jwt.decode(token).exp);
-    
-    res.status(200).json({ 
+
+    res.status(200).json({
       message: "Logged out successfully",
-      success: true 
+      success: true,
     });
   } catch (error) {
     console.error(error);
@@ -333,4 +391,10 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { registerJobSeeker, loginJobSeeker, registerEmployer, loginEmployer, logout };
+module.exports = {
+  registerJobSeeker,
+  loginJobSeeker,
+  registerEmployer,
+  loginEmployer,
+  logout,
+};

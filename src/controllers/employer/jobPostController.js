@@ -73,8 +73,8 @@ const getAllJobPostsByEmployerId = async (req, res) => {
       return res.status(404).json({ message: "Employer not found" });
     }
 
-    const jobPosts = await JobPost.find({ user_id: employer.user_id });
-    res.status(200).json(jobPosts);
+    const jobs = await JobPost.find({ user_id: employer.user_id });
+    res.status(200).json({jobs, status: true});
   } catch (error) {
     console.error("Error fetching job posts:", error);
     res.status(500).json({ message: "Internal server error" });
