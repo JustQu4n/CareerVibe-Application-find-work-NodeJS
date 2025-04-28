@@ -13,6 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: 'http://localhost:5173', // Cho phép truy cập từ frontend
   credentials: true,
+  exposedHeaders: ['Authorization']
 }));
 app.use(express.urlencoded({ extended: true }));
 

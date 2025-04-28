@@ -126,6 +126,6 @@ router.delete('/:id', authMiddleware, jobSeekerController.deleteJobSeekerProfile
  *       500:
  *         description: Internal server error
  */
-router.get('/:id/applications', authMiddleware, jobSeekerController.getAllJobApplications);
+//router.get('/:id/applications', authMiddleware, jobSeekerController.getAllJobApplications);
 
 module.exports = router;

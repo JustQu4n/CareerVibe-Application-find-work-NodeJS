@@ -67,7 +67,6 @@ const createJobPost = async (req, res) => {
 const getAllJobPostsByEmployerId = async (req, res) => {
   try {
     const { employer_id } = req.params;
-
     const employer = await Employer.findOne({ _id: employer_id });
     if (!employer) {
       return res.status(404).json({ message: "Employer not found" });
@@ -90,45 +89,68 @@ const updateJobPost = async (req, res) => {
       title,
       description,
       location,
+      address,
+      experience,
+      skills,
+      level,
       salary,
+      gender,
       job_type,
-      status,
+      expires_at,
+      status
     } = req.body;
 
-    // Kiểm tra xem user_id và company_id có khớp với employer không
-    const employer = await Employer.find({
-      _id: user_id,
-      company_id: company_id,
-    });
-    if (!employer) {
-      return res
-        .status(403)
-        .json({ message: "You are not authorized to update this job post" });
+    // First check if the job post exists
+    const jobPost = await JobPost.findById(jobPostId);
+    if (!jobPost) {
+      return res.status(404).json({ 
+        success: false,
+        message: "Job post not found" 
+      });
     }
 
-    // Update job post
+    // Check if the user is authorized to update this job post
+    const employer = await Employer.findOne({ user_id: user_id });
+    if (!employer) {
+      return res.status(403).json({ 
+        success: false,
+        message: "You are not authorized to update this job post" 
+      });
+    }
+
+    // Update job post with all model fields
     const updatedJobPost = await JobPost.findByIdAndUpdate(
       jobPostId,
       {
+        company_id,
         title,
         description,
         location,
+        address,
+        experience,
+        skills,
+        level,
         salary,
+        gender,
         job_type,
+        expires_at,
         status,
         updated_at: Date.now(),
       },
       { new: true }
     );
 
-    if (!updatedJobPost) {
-      return res.status(404).json({ message: "Job post not found" });
-    }
-
-    res.status(200).json(updatedJobPost);
+    res.status(200).json({
+      success: true,
+      message: "Job post updated successfully",
+      data: updatedJobPost
+    });
   } catch (error) {
     console.error("Error updating job post:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error" 
+    });
   }
 };
 

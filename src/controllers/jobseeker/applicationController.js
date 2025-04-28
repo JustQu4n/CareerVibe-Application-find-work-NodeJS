@@ -1,5 +1,5 @@
-const JobPost = require('../database/models/JobPost');
-const Application = require('../database/models/Application');
+const JobPost = require('../../database/models/JobPost');
+const Application = require('../../database/models/Application');
 
 
 
@@ -42,7 +42,8 @@ const createApplication = async (req, res) => {
 const getAppliedJobs = async (req, res) => {
     try {
         // Get job_seeker_id from authenticated user
-        const job_seeker_id = req.id;
+        const {job_seeker_id} = req.params;
+        console.log("Job Seeker ID: ", job_seeker_id);
         
         if (!job_seeker_id) {
             return res.status(401).json({
@@ -63,10 +64,10 @@ const getAppliedJobs = async (req, res) => {
             .limit(limit)
             .populate({
                 path: 'job_post_id',
-                select: 'title company_id location salary job_type deadline status',
+                select: 'title company_id location salary skills job_type  status',
                 populate: {
                     path: 'company_id',
-                    select: 'name logo_url'
+                    select: 'name logo'
                 }
             });
             
@@ -79,7 +80,7 @@ const getAppliedJobs = async (req, res) => {
             total,
             totalPages: Math.ceil(total / limit),
             currentPage: page,
-            application: applications.map(app => ({
+            applications: applications.map(app => ({
                 application_id: app._id,
                 status: app.status,
                 applied_date: app.createdAt,
