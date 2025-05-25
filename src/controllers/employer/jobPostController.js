@@ -313,6 +313,55 @@ const getJobPostById = async (req, res) => {
   }
 };
 
+const getPostRelated = async (req, res) => {
+  const { jobId } = req.params;
+
+  try {
+    const currentJob = await JobPost.findById(jobId);
+    if (!currentJob) return res.status(404).json({ message: 'Job not found' });
+
+    const allJobs = await JobPost.find({ _id: { $ne: jobId } });
+
+    const computeSimilarity = (jobA, jobB) => {
+      let score = 0;
+
+      // So khớp vị trí (location)
+      if (jobA.location === jobB.location) score += 2;
+
+      // So khớp cấp bậc (level)
+      if (jobA.level && jobB.level && jobA.level === jobB.level) score += 2;
+
+      // So khớp kỹ năng
+      const skillsA = jobA.skills || [];
+      const skillsB = jobB.skills || [];
+      const matchedSkills = skillsA.filter(skill => skillsB.includes(skill));
+      score += matchedSkills.length; // mỗi kỹ năng trùng = +1
+
+      // So khớp tiêu đề gần đúng
+      const titleWordsA = jobA.title.toLowerCase().split(' ');
+      const titleWordsB = jobB.title.toLowerCase().split(' ');
+      const commonWords = titleWordsA.filter(word => titleWordsB.includes(word));
+      score += commonWords.length * 0.5;
+
+      return score;
+    };
+
+    const scoredJobs = allJobs.map(job => ({
+      ...job.toObject(),
+      similarityScore: computeSimilarity(currentJob, job),
+    }));
+
+    // Sắp xếp theo similarity score giảm dần và lấy top 5
+    const relatedJobs = scoredJobs
+      .sort((a, b) => b.similarityScore - a.similarityScore)
+      .slice(0, 5);
+
+    return res.status(200).json({ success: true, relatedJobs: relatedJobs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 module.exports = {
   createJobPost,
   getAllJobPostsByEmployerId,
@@ -321,5 +370,6 @@ module.exports = {
   searchJobs,
   filterJobs,
   getAllJobs,
-  getJobPostById
+  getJobPostById,
+  getPostRelated,
 };

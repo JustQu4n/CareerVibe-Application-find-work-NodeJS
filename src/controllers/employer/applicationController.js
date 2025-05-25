@@ -23,7 +23,7 @@ const getApplicationsByJobPost = async (req, res) => {
         // Tìm tất cả application cho các job_post đó
         const applications = await Application.find({ job_post_id: { $in: jobPostIds } })
           .populate("job_seeker_id", "full_name avatar skills experience") // populate thông tin ứng viên
-          .populate("job_post_id", "title location"); // populate tiêu đề bài viết
+          .populate("job_post_id", "title description location skills experience level salary status created_at"); // populate tiêu đề bài viết
     
         res.json({ applications });
       } catch (error) {
@@ -41,7 +41,7 @@ const getApplicationDetail = async (req, res) => {
     console.log("Application ID:", applicationId); // Log ID để kiểm tra
     const application = await Application.findById(applicationId)
       .populate("job_seeker_id", "full_name avatar skills experience address phone")
-      .populate("job_post_id", "title description location skills experience level salary");
+      .populate("job_post_id", "title description location skills experience level salary status created_at");
 
     if (!application) {
       return res.status(404).json({ message: "Application not found" });

@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/authMiddleware');
 const applicationController = require('../../controllers/jobseeker/applicationController');
+const upload = require('../../config/multer'); 
 
 
-router.post('/submit', authMiddleware, applicationController.createApplication);
+router.post('/submit', upload.single('cv'), authMiddleware, applicationController.createApplication);
 router.get('/all-applications/:job_seeker_id', authMiddleware, applicationController.getAppliedJobs);
 
 

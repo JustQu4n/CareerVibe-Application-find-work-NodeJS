@@ -7,7 +7,11 @@ const createApplication = async (req, res) => {
     try {
         
         const { job_post_id, job_seeker_id, cover_letter } = req.body;
+        console.log("Job Post ID: ", job_post_id);
+        console.log("Job Seeker ID: ", job_seeker_id);
+        console.log("Cover Letter: ", cover_letter);
         const cvFile = req.file;
+        
 
         if (!req.file) {
             return res.status(400).json({ success: false, message: "CV file is required" });
@@ -24,13 +28,13 @@ const createApplication = async (req, res) => {
         if (existsApplication) {
             return res.status(400).json({ success: false, message: "You have already applied for this job" });
         }
-
+        const cvPath = req.file.path || (req.file.destination + '/' + req.file.filename);
         // Create a new application
         const application = new Application({
             job_post_id,
             job_seeker_id,
             cover_letter,
-            cv_url: cvFile.path,
+            cv_url: cvPath,
         });
         await application.save();
         res.status(201).json({ success: true, message: "Application submitted successfully" });

@@ -69,5 +69,6 @@ router.get('/search', jobPostController.searchJobs);
 router.get('/filter', jobPostController.filterJobs);
 router.get('/', jobPostController.getAllJobs);
 router.get('/:id', jobPostController.getJobPostById);
+router.get('/jobs/:jobId/related', jobPostController.getPostRelated);
 
 module.exports = router;
