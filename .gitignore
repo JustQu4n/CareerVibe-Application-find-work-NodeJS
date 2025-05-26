@@ -70,3 +70,4 @@ Dockerfile
 .dockerignore
 
 uploads/cv
+src/config/taskmanagement-10f8c-firebase-adminsdk-oyztp-8b6085d38e.json
