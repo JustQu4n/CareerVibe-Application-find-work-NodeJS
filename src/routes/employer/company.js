@@ -72,5 +72,8 @@ const authMiddleware = require('../../middlewares/AuthMiddleware');
 router.get('/:company_id/job-posts', companyController.listAllJobPostsOfCompany);
 router.put('/:company_id', authMiddleware, companyController.updateCompany);
 router.get('/name', companyController.getNameCompany);
+router.get('/:companyId/details', companyController.getCompanyDetails);
+
+
 
 module.exports = router;

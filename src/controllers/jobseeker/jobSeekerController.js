@@ -20,6 +20,7 @@ const updateJobSeekerProfile = async (req, res) => {
     try {
         const jobSeekerId = req.params.id;
         const updatedData = req.body;
+        const file = req.file;
 
         const updatedJobSeeker = await JobSeeker.findByIdAndUpdate(jobSeekerId, updatedData, { new: true });
         if (!updatedJobSeeker) {

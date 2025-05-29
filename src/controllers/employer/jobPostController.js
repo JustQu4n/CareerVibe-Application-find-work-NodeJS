@@ -194,7 +194,7 @@ const searchJobs = async (req, res) => {
       query.location = { $regex: location, $options: "i" };
     }
 
-    const jobs = await JobPost.find(query).sort({ created_at: -1 });
+    const jobs = await JobPost.find(query).populate("company_id").sort({ created_at: -1 });
     res.status(200).json({ success: true, data: jobs });
   } catch (error) {
     console.error("Error searching job posts:", error);

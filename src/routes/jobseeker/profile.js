@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jobSeekerController = require('../../controllers/jobseeker/jobSeekerController');
-const authMiddleware = require('../../middlewares/authMiddleware');
+const authMiddleware = require('../../middlewares/AuthMiddleware');
+const upload = require('../../config/multer');
 
 /**
  * @swagger
@@ -77,7 +78,7 @@ router.get('/:id', authMiddleware, jobSeekerController.getJobSeekerById);
  *       500:
  *         description: Internal server error
  */
-router.put('/:id', authMiddleware, jobSeekerController.updateJobSeekerProfile);
+router.put('/:id', authMiddleware, upload.single('avatar'), jobSeekerController.updateJobSeekerProfile);
 
 /**
  * @swagger

@@ -95,7 +95,39 @@ const getNameCompany = async (req, res) => {
         });
     }
 }
+const getCompanyDetails = async (req, res) => {
+    try {
+        const { companyId } = req.params;
 
+        // Tìm công ty theo ID
+        const company = await Company.findById(companyId);
+        if (!company) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Company not found" 
+            });
+        }
+
+        // Tìm tất cả job posts của công ty
+        const jobPosts = await JobPost.find({ company_id: companyId }).populate('company_id', 'name logo address') // Kết nối với thông tin công ty
+            .sort({ created_at: -1 }); // Sắp xếp theo thời gian tạo mới nhất
+        
+        // Trả về kết quả
+        res.status(200).json({
+            success: true,
+            data: {
+                company: company, // Trả về toàn bộ thông tin công ty
+                jobPosts: jobPosts // Trả về toàn bộ danh sách job posts
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching company details:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Internal server error when fetching company details"
+        });
+    }
+};
 module.exports = {
-    listAllJobPostsOfCompany, updateCompany, getNameCompany
+    listAllJobPostsOfCompany, updateCompany, getNameCompany, getCompanyDetails 
 };
